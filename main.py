@@ -109,7 +109,7 @@ SERVICE_MODULES = {
     "tasks": "gtasks.tasks_tools",
     "contacts": "gcontacts.contacts_tools",
     "search": "gsearch.search_tools",
-    "appscript": "gappsscript.apps_script_tools",
+    # "appscript": "gappsscript.apps_script_tools",  # Disabled: Apps Script API not enabled in this GCP project
 }
 VALID_SERVICES = frozenset(SERVICE_MODULES)
 
@@ -468,7 +468,7 @@ def main():
         "tasks": "✓",
         "contacts": "👤",
         "search": "🔍",
-        "appscript": "📜",
+        # "appscript": "📜",  # Disabled: see SERVICE_MODULES above
     }
 
     # Determine which tools to import based on arguments
