@@ -1818,6 +1818,14 @@ async def manage_drive_access(
         validate_share_role(effective_role)
         validate_share_type(share_type)
 
+        # AHM safety block: public/anyone sharing is unrecoverable. Disabled at server level.
+        if share_type == "anyone":
+            raise ValueError(
+                "Public sharing (share_type='anyone') is disabled in this deployment for safety. "
+                "Once a file is shared publicly, the link can be indexed or copied and access cannot be reliably revoked. "
+                "Use share_type='user', 'group', or 'domain' to share with specific people instead."
+            )
+
         if share_type in ("user", "group") and not share_with:
             raise ValueError(f"share_with is required for share_type '{share_type}'")
         if share_type == "domain" and not share_with:
@@ -1916,6 +1924,15 @@ async def manage_drive_access(
                 validate_share_type(r_share_type)
             except ValueError as e:
                 results.append(f"  - {identifier}: Failed - {e}")
+                failure_count += 1
+                continue
+
+            # AHM safety block: reject 'anyone' share_type in batch grants too.
+            if r_share_type == "anyone":
+                results.append(
+                    f"  - {identifier}: Failed - Public sharing (share_type='anyone') is disabled "
+                    f"in this deployment. Use 'user', 'group', or 'domain' instead."
+                )
                 failure_count += 1
                 continue
 
@@ -2248,6 +2265,17 @@ async def set_drive_file_permissions(
     if link_sharing is not None and link_sharing not in valid_link_sharing:
         raise ValueError(
             f"Invalid link_sharing '{link_sharing}'. Must be one of: {', '.join(sorted(valid_link_sharing))}"
+        )
+
+    # AHM safety block: link_sharing values other than 'off' enable public/anyone-with-link access,
+    # which is unrecoverable once leaked. Disabled at server level.
+    if link_sharing is not None and link_sharing != "off":
+        raise ValueError(
+            f"Public link sharing (link_sharing='{link_sharing}') is disabled in this deployment for safety. "
+            "Once a file has 'anyone with the link' access, the link can be indexed or copied and access "
+            "cannot be reliably revoked. To share with specific people, use manage_drive_access "
+            "with share_type='user', 'group', or 'domain'. To turn OFF existing public sharing, "
+            "set link_sharing='off'."
         )
 
     resolved_file_id, file_metadata = await resolve_drive_item(
