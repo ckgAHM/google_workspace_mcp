@@ -23,6 +23,11 @@ dist/
 mcp_server_debug.log
 .credentials/
 
+# Secrets — must NEVER be baked into the image. Cloud Run injects via Secret Manager.
+client_secret.json
+.env
+.env.*
+
 # Cache and temporary files
 __pycache__/
 *.pyc

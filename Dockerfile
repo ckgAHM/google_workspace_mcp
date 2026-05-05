@@ -12,8 +12,11 @@ RUN pip install --no-cache-dir uv
 
 COPY . .
 
-# Install Python dependencies using uv sync
-RUN uv sync --frozen --no-dev --extra disk
+# Install Python dependencies using uv sync.
+# `--extra gcs` pulls in google-cloud-storage so the GCS-backed credential
+# store works in multi-user Cloud Run deployments. Don't switch this to
+# `disk` unless you're going single-user and accept losing tokens on cold start.
+RUN uv sync --frozen --no-dev --extra gcs
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash app \
