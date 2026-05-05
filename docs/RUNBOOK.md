@@ -289,12 +289,22 @@ This is by design — it's the AHM safety block firing. The error message tells 
 
 | Role | Name | Email |
 |---|---|---|
-| Original builder / current admin | Christopher | chris@americanhatmakers.com |
-| Technical backup operator | _Not yet assigned_ | _Add when assigned_ |
-| AHM Workspace Super Admin | _Same as primary, or different_ | _Add_ |
+| Original builder / primary admin | Christopher | chris@americanhatmakers.com |
+| Technical backup operator | Ori | ori@americanhatmakers.com |
 | Anthropic support (Team/Enterprise plan) | Anthropic Console | `support@anthropic.com` or via Console |
 | Google Cloud support | (Console) | `https://console.cloud.google.com/support` |
 | Upstream MCP maintainer | Taylor Wilsdon | Issues at `https://github.com/taylorwilsdon/google_workspace_mcp/issues` |
+
+### Access matrix (as of 2026-05-04)
+
+| Access type | Christopher | Ori |
+|---|---|---|
+| GCP project Owner on `glassy-landing-494919-q8` | ✓ | ✓ |
+| AHM Anthropic-org admin | ✓ | ✓ |
+| Google Workspace Super Admin (americanhatmakers.com) | ✓ | ✓ |
+| GitHub collaborator on `ckgAHM/google_workspace_mcp` | ✓ (owner) | _NOT YET — needs to be added_ |
+
+If Ori is operating without Christopher and needs to commit code changes, this gap matters. To resolve: Christopher adds Ori at `https://github.com/ckgAHM/google_workspace_mcp/settings/access` with write permission. Until then, Ori can read the repo but not push code changes — they'd have to fork it under their own GitHub account and redeploy from that fork (Cloud Run deploys via `gcloud run deploy --source .` from a local checkout, so any working clone is sufficient for redeployments — Ori just couldn't push customizations back to the canonical fork).
 
 ---
 
