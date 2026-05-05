@@ -1441,6 +1441,13 @@ async def manage_event(
             send_updates=send_updates or "all",
         )
     elif action_lower == "delete":
+        # AHM safety block: deleting a calendar event sends cancellation emails to all attendees and cannot be undone.
+        raise ValueError(
+            "Calendar event deletion is disabled in this deployment for safety. "
+            "Deleting an event sends cancellation emails to every attendee immediately and cannot be undone. "
+            "To stop attending an event, use respond_to_event with response='declined' instead. "
+            "If you genuinely need to delete an event, do so manually in Google Calendar so you control the cancellation message timing."
+        )
         if not event_id:
             raise ValueError("event_id is required for delete action")
         return await _delete_event_impl(
@@ -1883,6 +1890,12 @@ async def manage_out_of_office(
             timezone=timezone,
         )
     elif action_lower == "delete":
+        # AHM safety block: deleting an out-of-office event also auto-restores meetings that were declined while you were out.
+        raise ValueError(
+            "Out-of-office event deletion is disabled in this deployment for safety. "
+            "OOO events auto-decline meetings, and deleting one can have downstream effects on already-declined invites. "
+            "To remove an OOO entry, do so manually in Google Calendar."
+        )
         if not event_id:
             raise ValueError("event_id is required for delete action")
         return await _delete_ooo_event_impl(
@@ -2364,6 +2377,12 @@ async def manage_focus_time(
             timezone=timezone,
         )
     elif action_lower == "delete":
+        # AHM safety block: focus-time events auto-decline meetings; deleting them mid-day can recreate scheduling churn.
+        raise ValueError(
+            "Focus-time event deletion is disabled in this deployment for safety. "
+            "Focus-time events auto-decline meetings while active. Deleting one mid-period can recreate scheduling pressure. "
+            "To remove a focus-time block, do so manually in Google Calendar."
+        )
         if not event_id:
             raise ValueError("event_id is required for delete action")
         return await _delete_focus_time_event_impl(

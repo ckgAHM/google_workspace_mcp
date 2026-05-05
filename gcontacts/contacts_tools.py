@@ -1081,6 +1081,12 @@ async def manage_contact(
                 raise
 
     # action == "delete"
+    # AHM safety block: Google Contacts has no Trash. Deletion is permanent.
+    raise ValueError(
+        "Contact deletion is disabled in this deployment for safety. "
+        "Once deleted, contact data cannot be recovered — Google Contacts has no Trash or restore feature. "
+        "If you need to remove a contact, do so manually at https://contacts.google.com so it's an explicit human decision."
+    )
     await asyncio.to_thread(
         service.people().deleteContact(resourceName=resource_name).execute
     )
@@ -1496,6 +1502,13 @@ async def manage_contacts_batch(
         return response
 
     # action == "delete"
+    # AHM safety block: batch deletion is permanent and high-blast-radius.
+    raise ValueError(
+        "Batch contact deletion is disabled in this deployment for safety. "
+        "Deleted contacts cannot be recovered (Google Contacts has no Trash). "
+        "Even one accidental batch delete can wipe your entire contact list. "
+        "If you need to remove contacts, do so manually at https://contacts.google.com."
+    )
     if not contact_ids:
         raise UserInputError("contact_ids parameter is required for 'delete' action.")
 

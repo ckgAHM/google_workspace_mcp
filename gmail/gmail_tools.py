@@ -2863,6 +2863,12 @@ async def manage_gmail_label(
         return f"Label updated successfully!\nName: {updated_label['name']}\nID: {updated_label['id']}"
 
     elif action == "delete":
+        # AHM safety block: deleting a label removes it from every message and the associations are unrecoverable.
+        raise ValueError(
+            "Gmail label deletion is disabled in this deployment for safety. "
+            "Deleting a label removes it from every message that had it, and the message-label associations are permanently lost. "
+            "If you need to remove a label, do so manually in Gmail (Settings → Labels) so the consequences are explicit."
+        )
         label = await asyncio.to_thread(
             service.users().labels().get(userId="me", id=label_id).execute
         )
@@ -3010,6 +3016,13 @@ async def manage_gmail_filter(
         fid = created_filter.get("id", "(unknown)")
         return f"Filter created successfully!\nFilter ID: {fid}"
     elif action_lower == "delete":
+        # AHM safety block: filters control auto-archive/auto-forward/auto-label of incoming mail. Deletion silently changes behavior.
+        raise ValueError(
+            "Gmail filter deletion is disabled in this deployment for safety. "
+            "Filters control auto-archiving, auto-forwarding, and auto-labeling of incoming mail. "
+            "Deleting one silently changes how new mail is processed, which is hard to debug after the fact. "
+            "If you need to remove a filter, do so manually in Gmail (Settings → Filters and Blocked Addresses)."
+        )
         if not filter_id:
             raise ValueError("filter_id is required for delete action")
         logger.info(f"[manage_gmail_filter] Deleting filter {filter_id}")
