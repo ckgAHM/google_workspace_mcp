@@ -4,6 +4,21 @@ This document is the operating manual for AHM's internal Google Workspace MCP de
 
 ---
 
+## First Time Operating This System
+
+If you're sitting down to work on this for the first time, do these in order before doing anything destructive:
+
+1. **Read this runbook end-to-end.** It's not long. Pay particular attention to "Access Prerequisites," "Architecture Overview," and "Common Operations."
+2. **Confirm your access.** Run `gcloud config set project glassy-landing-494919-q8` and then `gcloud run services list --region us-central1`. You should see the `workspace-mcp` service listed. If you get a permissions error, your GCP access isn't set up yet — see "Access Prerequisites" below.
+3. **Clone the repo locally.** `git clone https://github.com/ckgAHM/google_workspace_mcp.git` (or your fork if you've created one). Run `uv sync` and `uv run main.py --help` to confirm the toolchain works.
+4. **Check service health.** Open `https://workspace-mcp-231621948533.us-central1.run.app/.well-known/oauth-authorization-server` in a browser. You should see a JSON document with all 11 service scopes and Cloud Run URLs. If you see localhost URLs or an error, jump to "Troubleshooting → Tools aren't appearing."
+5. **Tail logs for a few minutes.** `gcloud run services logs tail workspace-mcp --region us-central1`. This shows you what real traffic looks like — useful baseline for spotting anomalies later.
+6. **If you're using Claude in Cowork or another agent UI to help operate this system,** the fastest way to give it context is to point it at this file: `https://github.com/ckgAHM/google_workspace_mcp/blob/main/docs/RUNBOOK.md`. Your AI assistant can fetch it and have the full architecture + procedures loaded in one shot.
+
+You don't need to memorize this file — bookmark it and refer back when needed. The Quick Reference table below is the single most-used page in normal operation.
+
+---
+
 ## Quick Reference
 
 | Item | Value |
